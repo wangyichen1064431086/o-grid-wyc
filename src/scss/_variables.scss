@@ -4,7 +4,7 @@
 ////
 
 // ----------------------------------------------------------------------------
-// Responsive behaviour configuration
+// Responsive behaviour configuration(响应式行为配置)
 // ----------------------------------------------------------------------------
 
 /// Silent mode
@@ -12,6 +12,12 @@
 /// @type Bool
 ///
 /// @link http://origami.ft.com/docs/syntax/scss/#silent-styles "Silent" styles in Origami's documentation
+/* "Silent" Styles：
+Silent Styles 就是SCSS code编译的结果是空字符串，但是提供了混合器或变量，这些混合器或者变量可以通过一个独立的模块被包含或使用。一些模块可以轻易地支持silent style，但其他一些模块依赖于指向某些元素的class名，以获得通过JS定义的行为。
+
+如果一个模块只包含CSS，它应该支持silent styles。而如果一个模块也提供了JS且依赖于class名称，那么该模块应该要通过提供一个用以配置没有默认class名称的API来支持silent styles.
+
+*/
 $o-grid-is-silent: true !default;
 
 
@@ -30,33 +36,34 @@ $o-grid-shuffle-selectors: true !default;
 $o-grid-human-friendly-selectors: true !default;
 
 
-/// Grid mode
-/// - fluid: full width up to the largest layout's width
-/// - snappy: fluid width until the layout defined in $o-grid-start-snappy-mode-at (default: M),
-///           and then snaps into a larger fixed layout at each breakpoint
-/// - fixed: always fixed-width with the layout defined by $o-grid-fixed-layout (default: L)
+/// Grid mode（栅格模式）: $o-grid-mode
+/// - fluid: full width up to the largest layout's width（全宽的上线是最大的布局宽度）
+/// - snappy: fluid width until the layout defined in $o-grid-start-snappy-mode-at (default: M)   （当$o-grid-start-snappy-mode-at定义layout之前，使用fluid模式）；
+ ////          and then snaps into a larger fixed layout at each breakpoint $o-grid-start-snappy-mode-at(该变量默认值是 M)     （当$o-grid-start-snappy-mode-at定义layout之后，在逐渐变大的每个分段都使用一个更大的固定的layout。）
+
+/// - fixed: always fixed-width with the layout defined by $o-grid-fixed-layout (该变量默认值是 L) （总是等于$o-grid-fixed-layout (该变量默认值是 L)定义的layout宽度。）
 ///
 /// @type String - one of fluid (default), snappy, fixed
 $o-grid-mode: 'fluid' !default;
 
-/// Layout to default to when the grid has a fixed width (not fluid)
+/// Layout to default to when the grid has a fixed width (not fluid)（当栅格有固定宽度即fixed width时，默认的layout）
 ///
 /// @type String - One of $o-grid-layouts
 $o-grid-fixed-layout: 'L' !default;
 
-/// When the grid start snapping between fixed-width layouts
-/// in the case where a row has the `o-grid-row--snappy` class
+/// When the grid start snapping between fixed-width layouts （规定当栅格宽度在fixed-width的 layout宽度之间的时候，何时开始突变）
+/// in the case where a row has the `o-grid-row--snappy` class （需要其row具有'o-grid-row--snappy'的class样式）
 ///
 /// @type String
 $o-grid-start-snappy-mode-at: 'M' !default;
 
-/// Show the currently active breakpoint and output loaded settings
+/// Show the currently active breakpoint and output loaded settings （在网页右上角展示当前处在的breakpoint（即是什么宽度类型的））
 /// @link https://github.com/sass-mq/sass-mq#seeing-the-currently-active-breakpoint
 ///
 /// @type Bool
 $o-grid-debug-mode: false !default;
 
-/// Output IE 8-specific rules?
+/// Output IE 8-specific rules? （是否输出IE8特定规则代码）
 /// - false: no IE8 support at all
 /// - 'only': serve code compatible with IE8 only
 /// - 'inline' (default): serve IE8 specific code alongside modern browsers code
@@ -66,25 +73,29 @@ $o-grid-ie8-rules: 'inline' !default;
 
 
 // ----------------------------------------------------------------------------
-// Grid settings and dimensions
+// Grid settings and dimensions（栅格的设置和尺寸标注）
 // ----------------------------------------------------------------------------
 
-/// Number of columns
+/// Number of columns （columns的数量）
 ///
 /// @type Number (unitless)
 $o-grid-columns: 12 !default;
 
-/// Minimum width, in pixels
+/// Minimum width, in pixels（最小宽度，单位px）
 ///
 /// @type Number
 $o-grid-min-width: 240px !default;
 
-/// Layouts
+/// Layouts（布局宽度）
 ///
 /// Each layout is calculated following a specific column width,
 /// in order to base breakpoints on the structure of the grid itself
 ///
 /// @type Map
+/* 知识补充：关于sass-map
+ maps are mostly manipulated using SassScript functions. The map-get function looks up values in a map and the map-merge function adds values to a map
+
+*/
 $o-grid-layouts: (
 	S:  490px,  // column-width: 30px, inner width: 470px
 	M:  740px,  // column-width: 40px, inner width: 700px
@@ -96,38 +107,53 @@ $o-grid-layouts: (
 ///
 /// @access private
 /// @type List
-$_o-grid-layout-names: map-keys($o-grid-layouts);
+/* 知识补充
+map_keys($map):Returns a list of all keys in a map.
+*/
+$_o-grid-layout-names: map-keys($o-grid-layouts);//得到值为("S","M","L","XL")
 
 /// Gutter sizes
 ///
-/// @type Map
+/// @type Map（间隔尺寸）
 $o-grid-gutters: (
 	default: 10px,
 	M:       20px,
 ) !default;
 
 // If layouts have changed but gutters haven't,
-// prune non-existant layouts.
+// prune non-existant layouts.（如果layouts改变了，但gutters未变，就去掉$o-grid-gutters中它存在而$o-grid-layouts不存在的layouts）
+/* 知识补充：
+关于@each，详见http://sass-lang.com/documentation/file.SASS_REFERENCE.html#each-directive
+*/
 @each $layout-name, $gutter-size in $o-grid-gutters {
 	@if ($layout-name != 'default') and (not map-has-key($o-grid-layouts, $layout-name)) {
 		$o-grid-gutters: map-remove($o-grid-gutters, $layout-name);
 	}
 }
 
-/// Maximum grid width
-/// Defaults to the largest layout width
+/// Maximum grid width(最大的栅格布局宽度)
+/// Defaults to the largest layout width（默认为$o-grid-layouts中最大的那个的键值）
 ///
 /// @access private
 /// @type Number
-$_o-grid-max-width: map-get($o-grid-layouts, nth($_o-grid-layout-names, -1));
+/* 知识补充：
+SassScript方法 nth($list,$n):Gets the nth item in a list.
+NOTE: The first item in a Sass list is 1, not 0
+*/
+$_o-grid-max-width: map-get($o-grid-layouts, nth($_o-grid-layout-names, -1)); //此处得到的值为1220px（即XL）
 
-// When snappy mode is enabled, force $_o-grid-max-width to the largest layout width
+// When snappy mode is enabled, force $_o-grid-max-width to the largest layout width（还是对snappymode不太理解）
 // instead of the default $_o-grid-max-width
 @if $o-grid-mode == 'snappy' {
 	$_o-grid-max-width: map-get($o-grid-layouts, nth($_o-grid-layout-names, -1)) !global;
 }
+/* 知识补充：
+* 关于 !global
+Variables are only available within the level of nested selectors where they’re defined. If they’re defined outside of any nested selectors, they’re available everywhere. They can also be defined with the !global flag, in which case they’re also available everywhere. 
+*/
 
-/// Current scope
+
+/// Current scope（当前作用域）
 ///
 /// @access private
 /// @type String

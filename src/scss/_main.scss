@@ -3,7 +3,7 @@
 /// @link http://registry.origami.ft.com/components/o-grid
 ////
 
-/// Add a layout
+/// Add a layout（添加一种页面宽度类型）
 ///
 /// @example scss
 ///  @include oGridAddLayout($layout-name: P, $layout-width: 600px);
@@ -46,7 +46,7 @@
 	$_o-grid-max-width: map-get($o-grid-layouts, nth($_o-grid-layout-names, -1)) !global;
 }
 
-/// Get the gutter of a layout
+/// Get the gutter of a layout（获取某种页面宽度类型的间隔）
 ///
 /// @param {String|null|Boolean} $layout-name - One of $o-grid-layouts
 @function oGridGutter($layout-name: default) {
@@ -68,7 +68,7 @@
 	@return oGridGutter($layout);
 }
 
-/// Get the max width of a layout
+/// Get the max width of a layout（获取某一页面类型在不同栅格模式[fixed,snappy or fluid]下中可取到的最大宽度）
 ///
 /// @example
 ///  .my-large-container { width: oGridGetMaxWidthForLayout(L); }
@@ -97,7 +97,7 @@
 	}
 }
 
-/// % width of an element in the grid
+/// % width of an element in the grid（把一个元素在栅格系统中所占的宽度描述转换为百分比）
 ///
 /// @example
 ///  .one-half   { width: oGridColspan(1/2); }      // 50%
@@ -133,8 +133,8 @@
 	}
 }
 
-/// Apply styles at a given layout size
-/// Wrapper for the Sass MQ mq() mixin
+/// Apply styles at a given layout size（将样式运用到给定的页面类型尺寸上）
+/// Wrapper for the Sass MQ mq() mixin（该混合器就是包装了一下sass-mq的mq()方法）
 ///
 /// @link https://git.io/sass-mq Sass MQ documentation
 ///
@@ -180,7 +180,7 @@
 	$_o-grid-scope: $original-scope !global;
 }
 
-/// Target styles at Internet Explorer 8 only
+/// Target styles at Internet Explorer 8 only（针对IE8的样式混合器）
 @mixin oGridTargetIE8 {
 	// Users may target styles at IE8, but only in the global scope,
 	// but it shouldn't output any code inside of a oGridRespondTo call
